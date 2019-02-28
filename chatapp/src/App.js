@@ -6,10 +6,16 @@ import Chatkit from '@pusher/chatkit-client'
 import {tokenURL, instanceLocator} from "./config.js"
 
 
-import Test from "./components/Test"
 import MessageList from "./components/MessageList"
 
 class App extends Component {
+
+  constructor(){
+    super()
+    this.state = {
+      messages: []
+    }
+  }
 
 componentDidMount(){
   const chatManager = new Chatkit.ChatManager({
@@ -20,24 +26,36 @@ componentDidMount(){
     })
   })
 
-  chatManager.connect()
-  .then(currentUser =>{
-    currentUser.subscribeToRoom({
-      roomId:"19409457",
-      hooks: {
-        onNewMessage: message =>{
-          console.log("message.text:", message.text);
-        }
-      }
-    })
-  })
+
+
+
+  chatManager
+    .connect()
+      .then(currentUser => {
+        currentUser.subscribeToRoom({
+          roomId: currentUser.rooms[0].id,
+          hooks: {
+            onMessage: message => {
+              console.log(`Received new message: ${message.text}`);
+              this.setState({
+                messages: [...this.state.messages, message]
+              })
+            }
+          }
+        })
+      })
+      .catch(error => {
+        console.error("error:", error)
+      })
+
 
 }
 
   render() {
+    console.log('Messages', this.state.messages)
     return (
       <div className="App">
-    <MessageList />
+    <MessageList messages={this.state.messages}/>
       </div>
     );
   }
