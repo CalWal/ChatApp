@@ -8,6 +8,7 @@ import {tokenURL, instanceLocator} from "./config.js"
 
 import MessageList from "./components/MessageList"
 
+
 class App extends Component {
 
   constructor(){
