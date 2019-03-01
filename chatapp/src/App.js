@@ -7,7 +7,7 @@ import {tokenURL, instanceLocator} from "./config.js"
 
 
 import MessageList from "./components/MessageList"
-
+import SendMessageForm from "./components/SendMessageForm"
 
 class App extends Component {
 
@@ -16,6 +16,7 @@ class App extends Component {
     this.state = {
       messages: []
     }
+    this.sendMessage = this.sendMessage.bind(this)
   }
 
 componentDidMount(){
@@ -33,7 +34,8 @@ componentDidMount(){
   chatManager
     .connect()
       .then(currentUser => {
-        currentUser.subscribeToRoom({
+        this.currentUser = currentUser
+        this.currentUser.subscribeToRoom({
           roomId: currentUser.rooms[0].id,
           hooks: {
             onMessage: message => {
@@ -50,6 +52,14 @@ componentDidMount(){
       })
 
 
+
+}
+
+  sendMessage(text){
+    this.currentUser.sendMessage({
+      text,
+      roomId: this.currentUser.rooms[0].id
+  })
 }
 
   render() {
@@ -57,6 +67,7 @@ componentDidMount(){
     return (
       <div className="App">
     <MessageList messages={this.state.messages}/>
+    <SendMessageForm sendMessage={this.sendMessage} />
       </div>
     );
   }
