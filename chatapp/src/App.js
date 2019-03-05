@@ -8,13 +8,16 @@ import {tokenURL, instanceLocator} from "./config.js"
 
 import MessageList from "./components/MessageList"
 import SendMessageForm from "./components/SendMessageForm"
+import RoomList from "./components/RoomList"
 
 class App extends Component {
 
   constructor(){
     super()
     this.state = {
-      messages: []
+      messages: [],
+      joinableRooms: [],
+      joinedRooms: []
     }
     this.sendMessage = this.sendMessage.bind(this)
   }
@@ -35,6 +38,16 @@ componentDidMount(){
     .connect()
       .then(currentUser => {
         this.currentUser = currentUser
+
+        this.currentUser.getJoinableRooms()
+        .then(joinableRooms =>{
+          this.setState({
+            joinableRooms,
+            joinedRooms: this.currentUser.rooms
+          })
+        })
+
+
         this.currentUser.subscribeToRoom({
           roomId: currentUser.rooms[0].id,
           hooks: {
@@ -66,6 +79,7 @@ componentDidMount(){
     console.log('Messages', this.state.messages)
     return (
       <div className="App">
+    <RoomList rooms={[...this.state.joinableRooms,...this.state.joinedRooms]}/>    
     <MessageList messages={this.state.messages}/>
     <SendMessageForm sendMessage={this.sendMessage} />
       </div>
