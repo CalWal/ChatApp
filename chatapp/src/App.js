@@ -15,11 +15,14 @@ class App extends Component {
   constructor(){
     super()
     this.state = {
+      roomId: null,
       messages: [],
       joinableRooms: [],
       joinedRooms: []
     }
     this.sendMessage = this.sendMessage.bind(this)
+    this.subscribeToRoom = this.subscribeToRoom.bind(this)
+    this.getRooms = this.getRooms.bind(this)
   }
 
 componentDidMount(){
@@ -38,27 +41,11 @@ componentDidMount(){
     .connect()
       .then(currentUser => {
         this.currentUser = currentUser
-
-        this.currentUser.getJoinableRooms()
-        .then(joinableRooms =>{
-          this.setState({
-            joinableRooms,
-            joinedRooms: this.currentUser.rooms
-          })
-        })
+        this.getRooms()
 
 
-        this.currentUser.subscribeToRoom({
-          roomId: currentUser.rooms[0].id,
-          hooks: {
-            onMessage: message => {
-              console.log(`Received new message: ${message.text}`);
-              this.setState({
-                messages: [...this.state.messages, message]
-              })
-            }
-          }
-        })
+
+
       })
       .catch(error => {
         console.error("error:", error)
@@ -67,11 +54,43 @@ componentDidMount(){
 
 
 }
+  getRooms(){
+    this.currentUser.getJoinableRooms()
+    .then(joinableRooms =>{
+      this.setState({
+        joinableRooms,
+        joinedRooms: this.currentUser.rooms
+      })
+    })
+  }
+
+  subscribeToRoom(roomId){
+    this.setState({
+      messages: []
+    })
+    this.currentUser.subscribeToRoom({
+      roomId: roomId,
+      hooks: {
+        onMessage: message => {
+          this.setState({
+            messages: [...this.state.messages, message]
+          })
+        }
+      }
+    })
+    .then(room =>{
+      this.setState({
+        roomId: room.id
+      })
+      this.getRooms()
+    })
+
+  }
 
   sendMessage(text){
     this.currentUser.sendMessage({
       text,
-      roomId: this.currentUser.rooms[0].id
+      roomId: this.state.roomId
   })
 }
 
@@ -79,7 +98,9 @@ componentDidMount(){
     console.log('Messages', this.state.messages)
     return (
       <div className="App">
-    <RoomList rooms={[...this.state.joinableRooms,...this.state.joinedRooms]}/>    
+    <RoomList subscribeToRoom={this.subscribeToRoom}
+      rooms={[...this.state.joinableRooms,...this.state.joinedRooms]}
+      />
     <MessageList messages={this.state.messages}/>
     <SendMessageForm sendMessage={this.sendMessage} />
       </div>
