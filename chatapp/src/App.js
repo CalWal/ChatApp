@@ -35,17 +35,11 @@ componentDidMount(){
   })
 
 
-
-
   chatManager
     .connect()
       .then(currentUser => {
         this.currentUser = currentUser
         this.getRooms()
-
-
-
-
       })
       .catch(error => {
         console.error("error:", error)
@@ -98,7 +92,9 @@ componentDidMount(){
     console.log('Messages', this.state.messages)
     return (
       <div className="App">
-    <RoomList subscribeToRoom={this.subscribeToRoom}
+    <RoomList
+      roomId = {this.state.roomId}
+      subscribeToRoom={this.subscribeToRoom}
       rooms={[...this.state.joinableRooms,...this.state.joinedRooms]}
       />
     <MessageList messages={this.state.messages}/>
