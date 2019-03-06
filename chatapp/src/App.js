@@ -9,6 +9,7 @@ import {tokenURL, instanceLocator} from "./config.js"
 import MessageList from "./components/MessageList"
 import SendMessageForm from "./components/SendMessageForm"
 import RoomList from "./components/RoomList"
+import NewRoomForm from "./components/NewRoomForm"
 
 class App extends Component {
 
@@ -23,6 +24,7 @@ class App extends Component {
     this.sendMessage = this.sendMessage.bind(this)
     this.subscribeToRoom = this.subscribeToRoom.bind(this)
     this.getRooms = this.getRooms.bind(this)
+    this.createRoom = this.createRoom.bind(this)
   }
 
 componentDidMount(){
@@ -88,6 +90,13 @@ componentDidMount(){
   })
 }
 
+  createRoom(name){
+    this.currentUser.createRoom({
+      name
+    })
+    .then(room => this.subscribeToRoom(room.id))
+  }
+
   render() {
     console.log('Messages', this.state.messages)
     return (
@@ -97,8 +106,13 @@ componentDidMount(){
       subscribeToRoom={this.subscribeToRoom}
       rooms={[...this.state.joinableRooms,...this.state.joinedRooms]}
       />
-    <MessageList messages={this.state.messages}/>
-    <SendMessageForm sendMessage={this.sendMessage} />
+    <MessageList
+      roomId={this.state.roomId}
+      messages={this.state.messages}/>
+    <SendMessageForm
+      disabled = {!this.state.roomId}
+      sendMessage={this.sendMessage} />
+    <NewRoomForm createRoom={this.createRoom}/>
       </div>
     );
   }
