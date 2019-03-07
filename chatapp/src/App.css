@@ -1,5 +1,5 @@
 :root {
-    --main-color: #5ea3d0;
+    --main-color:  #0078FF;
     --secondary-color: white;
     --main-text-color: #3e5869;
     --secondary-text-color: #b0c7d6;
@@ -19,7 +19,7 @@ html, body {
     height: 100%;
 }
 
-.app {
+.App {
     display: grid;
     height: 100%;
     grid-template-columns: repeat(6, 1fr);
@@ -58,7 +58,7 @@ html, body {
     height: 100%;
 }
 
-.rooms-list > ul {
+.rooms-list ul {
     list-style-type: none;
     padding: 0;
     overflow: scoll;
@@ -68,7 +68,7 @@ html, body {
     margin: 10px 0;
 }
 
-.rooms-list > h3 {
+.rooms-list h3 {
     margin: 5px 0;
     color: var(--secondary-color);
 }
